@@ -2,6 +2,9 @@ import git
 import os
 import sys
 import subprocess
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Set repository path from command line argument
 if len(sys.argv) > 1:
