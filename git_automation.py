@@ -17,7 +17,7 @@ def generate_commit_message(repo):
 
     try:
         result = subprocess.run(
-            ["ollama", "run", "qwen3:8b"],
+            ["ollama", "run", "mistral:7b-instruct"],
             input=f"Output ONLY a single Git commit message (no explanations, no thinking):\n{diff}\n",
             text=True,
             capture_output=True,
