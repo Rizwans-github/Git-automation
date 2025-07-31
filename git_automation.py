@@ -42,6 +42,10 @@ def generate_commit_message(repo):
 
 
 def automate_git_commit():
+    if not os.path.exists(os.path.join(REPO_PATH, ".git")):
+        print(f"Skipping {REPO_PATH}: Not a git repository.")
+        return
+
     repo = git.Repo(REPO_PATH)
 
     if repo.is_dirty(untracked_files=True):
