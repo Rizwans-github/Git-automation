@@ -69,15 +69,19 @@ def automate_git_commit(repo_path):
         print(f"\nChanges detected in {repo_path}, staging files...")
         repo.git.add(A=True)
 
-        commit_msg = generate_commit_message(repo)
-        print(f"\nProposed commit message: {commit_msg}")
-        user_input = input("Approve commit? (y/edit/n): ").strip().lower()
+        while True:
+            commit_msg = generate_commit_message(repo)
+            print(f"\nProposed commit message: {commit_msg}")
+            user_input = input("Approve commit? (y/edit/n): ").strip().lower()
 
-        if user_input == "n":
-            print("❌ Commit aborted.")
-            return
-        elif user_input == "edit":
-            commit_msg = input("Enter your custom commit message: ")
+            if user_input == "y":
+                break
+            elif user_input == "edit":
+                commit_msg = input("Enter your custom commit message: ")
+                break
+            elif user_input == "n":
+                print("🔄 Regenerating commit message...")
+                continue  # regenerate new commit message
 
         repo.git.commit("-m", commit_msg)
 
