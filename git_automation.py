@@ -19,10 +19,13 @@ def generate_commit_message(repo):
         result = subprocess.run(
             ["ollama", "run", "mistral:7b-instruct"],
             input=(
-                f"Generate ONLY ONE Git commit message in the format:\n"
-                f"<type>: <short description>\n"
-                f"Allowed types: feat, fix, chore, docs, refactor, test.\n"
-                f"NO explanations, NO extra text, NO ```diff, NO labels.\n\n"
+                f"Analyze the following diff and generate ONLY ONE Git commit message:\n"
+                f"- Use 'fix' if it solves a bug.\n"
+                f"- Use 'refactor' if it changes code structure or improves logic WITHOUT new functionality.\n"
+                f"- Use 'feat' ONLY if new functionality is added.\n"
+                f"- Use 'docs', 'test', or 'chore' accordingly.\n"
+                f"Output format: <type>: <short description>\n"
+                f"NO explanations, NO extra text.\n\n"
                 f"Diff:\n{diff}\n"
             ),
             text=True,
@@ -32,10 +35,15 @@ def generate_commit_message(repo):
 
         output = result.stdout.strip()
 
-        # Extract valid commit message
         match = re.search(r"(feat|fix|chore|docs|refactor|test): .+", output, re.IGNORECASE)
         if match:
-            return match.group(0).strip()
+            message = match.group(0).strip()
+
+            # Enforce "refactor" if no new function/class added
+            if message.lower().startswith("feat:") and not re.search(r"\b(def |class )", diff):
+                return re.sub(r"^feat:", "refactor:", message, flags=re.IGNORECASE)
+
+            return message
 
         return "chore: update project files"
 
