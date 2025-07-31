@@ -41,15 +41,13 @@ def generate_commit_message(repo):
 
         if result.returncode == 0 and result.stdout.strip():
             raw_output = result.stdout.strip()
-            print("🧠 Raw Ollama output:", raw_output)  # Debugging
+            print("Raw Ollama output:", raw_output)  # ✅ Removed emoji
             return raw_output.split("\n")[0]  # Only the first line
 
     except Exception as e:
-        print(f"⚠️ Ollama error: {e}")
+        print(f"Ollama error: {e}")
 
-    # Fallback if Ollama fails
     return f"chore({changed_files[0]}): update project files" if changed_files else "chore: update project files"
-
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
