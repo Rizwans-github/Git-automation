@@ -54,3 +54,5 @@ def automate_git_commit():
 
 if __name__ == "__main__":
     automate_git_commit()
+
+'test'
