@@ -27,13 +27,16 @@ def automate_git_commit():
         repo.git.add(A=True)
 
         diff = repo.git.diff('--cached')
-
         commit_msg = generate_commit_message(diff)
         print(f"Commit message: {commit_msg}")
 
         repo.git.commit('-m', commit_msg)
-        repo.git.push()
 
+        # Detect current branch dynamically
+        current_branch = repo.active_branch.name
+        print(f"Pushing changes to branch: {current_branch}")
+
+        repo.git.push("origin", current_branch)
         print("✅ Changes committed and pushed successfully!")
     else:
         print(f"No changes detected in {REPO_PATH}.")
