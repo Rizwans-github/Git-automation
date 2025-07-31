@@ -10,33 +10,33 @@ else:
     raise ValueError("No repository path provided!")
 
 def generate_commit_message(repo):
-    """Generate commit message using qwen3:8b model through Ollama."""
+    """Generate commit message using mistral:7b-instruct-q4 model through Ollama."""
     diff = repo.git.diff("--cached")
     if not diff.strip():
         return "chore: no staged changes found"
 
     try:
         result = subprocess.run(
-            ["ollama", "run", "mistral:7b-instruct"],
-            input=f"Output ONLY a single Git commit message (no explanations, no thinking):\n{diff}\n",
+            ["ollama", "run", "mistral:7b-instruct-q4"],
+            input=f"Output ONLY a short Git commit message (no explanations, no extra text):\n{diff}\n",
             text=True,
             capture_output=True,
             encoding="utf-8"
         )
         output = result.stdout.strip()
 
-        # Extract first line that looks like a commit message (skip "thinking..." or explanations)
+        # Extract first valid commit message line
         for line in output.splitlines():
             line = line.strip()
-            if line and not line.lower().startswith(("thinking", "okay", "explanation", "commit message")):
+            if line and re.match(r"^[a-z]+(\(.+\))?: .+", line, re.IGNORECASE):  # follows "type: message"
                 return line
 
+        # Fallback if AI output is bad
         return "chore: update project files"
 
     except Exception as e:
         print(f"Ollama error: {e}")
         return "chore: update project files"
-
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
