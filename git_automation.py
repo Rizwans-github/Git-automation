@@ -1,20 +1,23 @@
 import git
-from openai import OpenAI
-from dotenv import load_dotenv
 import os
 import sys
 
-# Load .env file
-load_dotenv(dotenv_path=r"C:\Users\rizwa\Tech\Github\automation\.env")
-
-# Get repo path from main.py
+# Get repo path dynamically from main.py
 if len(sys.argv) > 1:
     REPO_PATH = sys.argv[1]
 else:
     raise ValueError("No repository path provided!")
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def generate_commit_message(diff):
+    # Simple commit message generator (AI-free)
+    if "requirements.txt" in diff:
+        return "chore: update dependencies"
+    elif "README" in diff:
+        return "docs: update README"
+    elif "test" in diff:
+        return "test: update test files"
+    else:
+        return "chore: update project files"
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
@@ -25,22 +28,13 @@ def automate_git_commit():
 
         diff = repo.git.diff('--cached')
 
-        print("Generating commit message with ChatGPT...")
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that writes clear, concise git commit messages."},
-                {"role": "user", "content": f"Generate a commit message for this diff:\n{diff}"}
-            ]
-        )
-
-        commit_msg = response.choices[0].message.content.strip()
+        commit_msg = generate_commit_message(diff)
         print(f"Commit message: {commit_msg}")
 
         repo.git.commit('-m', commit_msg)
         repo.git.push()
 
-        print("Changes committed and pushed successfully!")
+        print("✅ Changes committed and pushed successfully!")
     else:
         print(f"No changes detected in {REPO_PATH}.")
 
