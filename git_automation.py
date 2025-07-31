@@ -2,6 +2,7 @@ import git
 import os
 import sys
 import subprocess
+import re
 
 if len(sys.argv) > 1:
     REPO_PATH = sys.argv[1]
@@ -17,16 +18,25 @@ def generate_commit_message(repo):
     try:
         result = subprocess.run(
             ["ollama", "run", "qwen3:8b"],
-            input=f"Generate a clear and concise Git commit message based on this diff:\n{diff}\n",
+            input=f"Output ONLY a single Git commit message (no explanations, no thinking):\n{diff}\n",
             text=True,
             capture_output=True,
             encoding="utf-8"
         )
-        commit_message = result.stdout.strip()
-        return commit_message if commit_message else "chore: update project files"
+        output = result.stdout.strip()
+
+        # Extract first line that looks like a commit message (skip "thinking..." or explanations)
+        for line in output.splitlines():
+            line = line.strip()
+            if line and not line.lower().startswith(("thinking", "okay", "explanation", "commit message")):
+                return line
+
+        return "chore: update project files"
+
     except Exception as e:
         print(f"Ollama error: {e}")
         return "chore: update project files"
+
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
@@ -44,7 +54,7 @@ def automate_git_commit():
         print(f"Pushing changes to branch: {current_branch}")
         repo.git.push("origin", current_branch)
 
-        print("Changes committed and pushed successfully!")
+        print("✅ Changes committed and pushed successfully!")
     else:
         print(f"No changes detected in {REPO_PATH}.")
 
