@@ -10,11 +10,11 @@ This project automates the process of **detecting file changes**, generating **A
 - Debounces duplicate file events to avoid unnecessary commits
 
 ## 📂 Project Structure:
-.
-├── main.py             # Watches for file changes and triggers automation
-├── git_automation.py   # Handles commit message generation and pushing
-├── .gitignore          # Ignores unnecessary files
-└── requirements.txt    # Python dependencies
+.<br>
+├── main.py             # Watches for file changes and triggers automation<br>
+├── git_automation.py   # Handles commit message generation and pushing<br>
+├── .gitignore          # Ignores unnecessary files<br>
+└── requirements.txt    # Python dependencies<br>
 
 ## 🛠 Requirements:
 - Python 3.9+
@@ -26,8 +26,8 @@ This project automates the process of **detecting file changes**, generating **A
 ## 🔧 Installation:
 ```bash
 # Clone the project
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/Rizwans-github/Git-automation.git
+cd Git-automation
 
 # Create a virtual environment
 python -m venv venv
