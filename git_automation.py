@@ -23,7 +23,8 @@ def generate_commit_message(repo):
                 f"- Use 'fix' if it solves a bug.\n"
                 f"- Use 'refactor' if it changes code structure or improves logic WITHOUT new functionality.\n"
                 f"- Use 'feat' ONLY if new functionality is added.\n"
-                f"- Use 'docs', 'test', or 'chore' accordingly.\n"
+                f"- Use 'docs' if documentation or README files are modified.\n"
+                f"- Use 'test' for test-related changes, 'chore' for maintenance tasks.\n"
                 f"Output format: <type>: <short description>\n"
                 f"NO explanations, NO extra text.\n\n"
                 f"Diff:\n{diff}\n"
@@ -39,7 +40,12 @@ def generate_commit_message(repo):
         if match:
             message = match.group(0).strip()
 
-            # Convert feat → refactor if no new function/class is added
+            # Enforce docs type if README or .md files are changed
+            staged_files = [item.a_path for item in repo.index.diff("HEAD")]
+            if any(f.lower().endswith(".md") or "readme" in f.lower() for f in staged_files):
+                return re.sub(r"^(feat|fix|chore|refactor|test):", "docs:", message, flags=re.IGNORECASE)
+
+            # Enforce refactor if no new function/class is added
             if message.lower().startswith("feat:") and not re.search(r"\b(def |class )", diff):
                 return re.sub(r"^feat:", "refactor:", message, flags=re.IGNORECASE)
 
@@ -50,6 +56,7 @@ def generate_commit_message(repo):
     except Exception as e:
         print(f"Ollama error: {e}")
         return "chore: update project files"
+
 
 def automate_git_commit(repo_path):
     try:
