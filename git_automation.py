@@ -12,24 +12,26 @@ else:
 OLLAMA_PATH = r"C:\Users\rizwa\AppData\Local\Programs\Ollama\ollama app.exe"  # Ollama executable path
 
 def generate_commit_message(repo):
-    # Get staged changes
     changed_files = repo.git.diff("--cached", "--name-only").splitlines()
-    diff_summary = repo.git.diff("--cached", "--unified=0")  # Only changed lines
+    diff_summary = repo.git.diff("--cached", "--unified=0")
 
     if not changed_files:
         return "chore: no significant changes"
 
     files_list = "\n".join(changed_files)
     prompt = (
-        f"You are an expert developer.\n"
-        f"Analyze the following git changes and generate a concise commit message.\n\n"
+        f"You are an expert software engineer. "
+        f"Based on the git diff, generate a clear, short, conventional commit message.\n\n"
+        f"Rules:\n"
+        f"- Use conventional commits (feat, fix, chore, refactor, docs, test, style)\n"
+        f"- Summarize in one line\n"
+        f"- Be specific about the change\n\n"
         f"Changed files:\n{files_list}\n\n"
         f"Diff:\n{diff_summary}\n\n"
         f"Commit message:"
     )
 
     try:
-        # Run Ollama for commit message generation
         result = subprocess.run(
             [OLLAMA_PATH, "run", "codellama:7b"],
             input=prompt,
@@ -38,12 +40,13 @@ def generate_commit_message(repo):
         )
 
         if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
+            return result.stdout.strip().split("\n")[0]  # only first line
 
     except Exception as e:
         print(f"⚠️ Ollama error: {e}")
 
     return "chore: update project files"
+
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
