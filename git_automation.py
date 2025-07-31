@@ -13,22 +13,22 @@ OLLAMA_PATH = r"C:\Users\rizwa\AppData\Local\Programs\Ollama\ollama app.exe"  # 
 
 def generate_commit_message(repo):
     changed_files = repo.git.diff("--cached", "--name-only").splitlines()
-    diff_summary = repo.git.diff("--cached", "--unified=0")
+    diff_summary = repo.git.diff("--cached", "--unified=3")
 
     if not changed_files:
         return "chore: no significant changes"
 
     files_list = "\n".join(changed_files)
     prompt = (
-        f"You are an expert software engineer. "
-        f"Based on the git diff, generate a clear, short, conventional commit message.\n\n"
+        f"You are an AI specialized in generating meaningful git commit messages.\n"
+        f"Analyze the following staged changes and return ONLY one commit message.\n\n"
         f"Rules:\n"
-        f"- Use conventional commits (feat, fix, chore, refactor, docs, test, style)\n"
-        f"- Summarize in one line\n"
-        f"- Be specific about the change\n\n"
+        f"- Use conventional commit style (feat, fix, chore, refactor, docs, test, style)\n"
+        f"- Mention the file or feature if possible\n"
+        f"- Do NOT add explanations or anything else\n\n"
         f"Changed files:\n{files_list}\n\n"
         f"Diff:\n{diff_summary}\n\n"
-        f"Commit message:"
+        f"Output ONLY the commit message:"
     )
 
     try:
@@ -40,12 +40,15 @@ def generate_commit_message(repo):
         )
 
         if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip().split("\n")[0]  # only first line
+            raw_output = result.stdout.strip()
+            print("🧠 Raw Ollama output:", raw_output)  # Debugging
+            return raw_output.split("\n")[0]  # Only the first line
 
     except Exception as e:
         print(f"⚠️ Ollama error: {e}")
 
-    return "chore: update project files"
+    # Fallback if Ollama fails
+    return f"chore({changed_files[0]}): update project files" if changed_files else "chore: update project files"
 
 
 def automate_git_commit():
