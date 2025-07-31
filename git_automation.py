@@ -39,7 +39,7 @@ def generate_commit_message(repo):
         if match:
             message = match.group(0).strip()
 
-            # Enforce "refactor" if no new function/class added
+            # Convert feat → refactor if no new function/class is added
             if message.lower().startswith("feat:") and not re.search(r"\b(def |class )", diff):
                 return re.sub(r"^feat:", "refactor:", message, flags=re.IGNORECASE)
 
