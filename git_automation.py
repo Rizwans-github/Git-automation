@@ -3,13 +3,16 @@ import os
 import sys
 import subprocess
 
+# Set repository path from command line argument
 if len(sys.argv) > 1:
     REPO_PATH = sys.argv[1]
 else:
-    raise ValueError("No repository path provided!")
+    REPO_PATH = r"C:\Users\rizwa\Tech\Github\Git-automation"  # fallback path
+
+OLLAMA_PATH = r"C:\Users\rizwa\AppData\Local\Programs\Ollama\ollama app.exe"  # Ollama executable path
 
 def generate_commit_message(repo):
-    # Get staged changes (diff and file names)
+    # Get staged changes
     changed_files = repo.git.diff("--cached", "--name-only").splitlines()
     diff_summary = repo.git.diff("--cached", "--unified=0")  # Only changed lines
 
@@ -19,7 +22,7 @@ def generate_commit_message(repo):
     files_list = "\n".join(changed_files)
     prompt = f"""
     You are an expert developer.
-    Analyze the following git changes and generate a clear and concise commit message.
+    Analyze the following git changes and generate a concise commit message.
 
     Changed files:
     {files_list}
@@ -31,14 +34,17 @@ def generate_commit_message(repo):
     """
 
     try:
+        # Run Ollama for commit message generation
         result = subprocess.run(
-            ["ollama", "run", "codellama:7b"],
+            [OLLAMA_PATH, "run", "codellama:7b"],
             input=prompt,
             text=True,
             capture_output=True
         )
+
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.strip()
+
     except Exception as e:
         print(f"⚠️ Ollama error: {e}")
 
