@@ -20,18 +20,13 @@ def generate_commit_message(repo):
         return "chore: no significant changes"
 
     files_list = "\n".join(changed_files)
-    prompt = f"""
-    You are an expert developer.
-    Analyze the following git changes and generate a concise commit message.
-
-    Changed files:
-    {files_list}
-
-    Diff:
-    {diff_summary}
-
-    Commit message:
-    """
+    prompt = (
+        f"You are an expert developer.\n"
+        f"Analyze the following git changes and generate a concise commit message.\n\n"
+        f"Changed files:\n{files_list}\n\n"
+        f"Diff:\n{diff_summary}\n\n"
+        f"Commit message:"
+    )
 
     try:
         # Run Ollama for commit message generation
