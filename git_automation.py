@@ -23,15 +23,16 @@ def generate_commit_message(repo):
 
     files_list = "\n".join(changed_files)
     prompt = (
-        f"You are an AI specialized in generating meaningful git commit messages.\n"
-        f"Analyze the following staged changes and return ONLY one commit message.\n\n"
+        f"You are an AI that writes clear and meaningful git commit messages.\n"
+        f"Analyze the following staged changes and generate ONE commit message ONLY.\n\n"
         f"Rules:\n"
-        f"- Use conventional commit style (feat, fix, chore, refactor, docs, test, style)\n"
-        f"- Mention the file or feature if possible\n"
-        f"- Do NOT add explanations or anything else\n\n"
+        f"- Use conventional commit style: feat, fix, chore, refactor, docs, test, style\n"
+        f"- Mention the MAIN file or feature modified\n"
+        f"- Be specific about what changed\n"
+        f"- Do NOT add explanations or multiple lines, just the commit message\n\n"
         f"Changed files:\n{files_list}\n\n"
-        f"Diff:\n{diff_summary}\n\n"
-        f"Output ONLY the commit message:"
+        f"Diff (summarize changes):\n{diff_summary}\n\n"
+        f"Now, output ONLY the commit message (nothing else):"
     )
 
     try:
@@ -39,17 +40,19 @@ def generate_commit_message(repo):
             [OLLAMA_PATH, "run", "codellama:7b"],
             input=prompt,
             text=True,
-            capture_output=True
+            capture_output=True,
+            encoding="utf-8"
         )
 
         if result.returncode == 0 and result.stdout.strip():
-            raw_output = result.stdout.strip()
-            print("Raw Ollama output:", raw_output)  # ✅ Removed emoji
-            return raw_output.split("\n")[0]  # Only the first line
+            raw_output = result.stdout.strip().splitlines()[0]
+            print("Raw Ollama output:", raw_output)
+            return raw_output
 
     except Exception as e:
         print(f"Ollama error: {e}")
 
+    # fallback
     return f"chore({changed_files[0]}): update project files" if changed_files else "chore: update project files"
 
 def automate_git_commit():
