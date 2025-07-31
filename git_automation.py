@@ -1,7 +1,7 @@
 import git
 import os
 import sys
-import re
+import subprocess
 
 if len(sys.argv) > 1:
     REPO_PATH = sys.argv[1]
@@ -9,28 +9,24 @@ else:
     raise ValueError("No repository path provided!")
 
 def generate_commit_message(repo):
-    staged_files = [item.a_path for item in repo.index.diff("HEAD")]  # changed files
+    """Generate commit message using qwen3:8b model through Ollama."""
     diff = repo.git.diff("--cached")
+    if not diff.strip():
+        return "chore: no staged changes found"
 
-    message_parts = []
-
-    for file in staged_files:
-        if file.endswith(".py"):
-            message_parts.append(f"refactor: update {file}")
-        elif file.endswith(".md"):
-            message_parts.append(f"docs: update {file}")
-        elif file == "requirements.txt":
-            message_parts.append("chore: update dependencies")
-        else:
-            message_parts.append(f"chore: modify {file}")
-
-    # Analyze diff for keywords
-    if re.search(r"def |class ", diff):
-        message_parts.insert(0, "feat: add/update functions or classes")
-    if re.search(r"fix|bug", diff, re.IGNORECASE):
-        message_parts.insert(0, "fix: bug fix in code")
-
-    return " | ".join(message_parts)
+    try:
+        result = subprocess.run(
+            ["ollama", "run", "qwen3:8b"],
+            input=f"Generate a clear and concise Git commit message based on this diff:\n{diff}\n",
+            text=True,
+            capture_output=True,
+            encoding="utf-8"
+        )
+        commit_message = result.stdout.strip()
+        return commit_message if commit_message else "chore: update project files"
+    except Exception as e:
+        print(f"Ollama error: {e}")
+        return "chore: update project files"
 
 def automate_git_commit():
     repo = git.Repo(REPO_PATH)
@@ -40,7 +36,7 @@ def automate_git_commit():
         repo.git.add(A=True)
 
         commit_msg = generate_commit_message(repo)
-        print(f"Commit message: {commit_msg}")
+        print(f"AI Commit message: {commit_msg}")
 
         repo.git.commit("-m", commit_msg)
 
@@ -48,7 +44,7 @@ def automate_git_commit():
         print(f"Pushing changes to branch: {current_branch}")
         repo.git.push("origin", current_branch)
 
-        print("✅ Changes committed and pushed successfully!")
+        print("Changes committed and pushed successfully!")
     else:
         print(f"No changes detected in {REPO_PATH}.")
 
