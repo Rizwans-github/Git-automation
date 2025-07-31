@@ -51,7 +51,7 @@ def automate_git_commit():
         print(f"Pushing changes to branch: {current_branch}")
         repo.git.push("origin", current_branch)
 
-        print("✅ Changes committed and pushed successfully!")
+        print(" Changes committed and pushed successfully!")
     else:
         print(f"No changes detected in {REPO_PATH}.")
 
