@@ -27,8 +27,8 @@ This project automates the process of **detecting file changes**, generating **A
 ## 🔧 Installation:
 ```bash
 # Clone the project
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/Rizwans-github/Git-automation
+cd Git_automatoin
 
 # Create a virtual environment
 python -m venv venv
