@@ -1,5 +1,5 @@
 # Git Auto Commit & Push Automation
-
+<img height="400" alt="Automation-flow-chart" src="Automation-flow-chart.png">
 This project automates the process of **detecting file changes**, generating **AI-powered commit messages**, and **pushing changes to GitHub** across multiple repositories in a root folder.
 
 ## 🚀 Features:
@@ -10,11 +10,11 @@ This project automates the process of **detecting file changes**, generating **A
 - Debounces duplicate file events to avoid unnecessary commits
 
 ## 📂 Project Structure:
-.<br>
-├── main.py             # Watches for file changes and triggers automation<br>
-├── git_automation.py   # Handles commit message generation and pushing<br>
-├── .gitignore          # Ignores unnecessary files<br>
-└── requirements.txt    # Python dependencies<br>
+.
+├── main.py             # Watches for file changes and triggers automation
+├── git_automation.py   # Handles commit message generation and pushing
+├── .gitignore          # Ignores unnecessary files
+└── requirements.txt    # Python dependencies
 
 ## 🛠 Requirements:
 - Python 3.9+
@@ -26,8 +26,8 @@ This project automates the process of **detecting file changes**, generating **A
 ## 🔧 Installation:
 ```bash
 # Clone the project
-git clone https://github.com/Rizwans-github/Git-automation.git
-cd Git-automation
+git clone <repo-url>
+cd <repo-name>
 
 # Create a virtual environment
 python -m venv venv
