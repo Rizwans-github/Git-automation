@@ -1,5 +1,6 @@
 # Git Auto Commit & Push Automation
 <img height="400" alt="Automation-flow-chart" src="Automation-flow-chart.png">
+
 This project automates the process of **detecting file changes**, generating **AI-powered commit messages**, and **pushing changes to GitHub** across multiple repositories in a root folder.
 
 ## 🚀 Features:
