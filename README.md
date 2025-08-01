@@ -11,10 +11,10 @@ This project automates the process of **detecting file changes**, generating **A
 - Debounces duplicate file events to avoid unnecessary commits
 
 ## 📂 Project Structure:
-.
-├── main.py             # Watches for file changes and triggers automation
-├── git_automation.py   # Handles commit message generation and pushing
-├── .gitignore          # Ignores unnecessary files
+.<br>
+├── main.py             # Watches for file changes and triggers automation<br>
+├── git_automation.py   # Handles commit message generation and pushing<br>
+├── .gitignore          # Ignores unnecessary files<br>
 └── requirements.txt    # Python dependencies
 
 ## 🛠 Requirements:
